@@ -1,0 +1,3 @@
+jsonpickle
+simple-salesforce
+python-dateutil
