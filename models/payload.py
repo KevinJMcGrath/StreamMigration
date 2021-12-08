@@ -30,10 +30,11 @@ class AccountLeadLink(Payload):
 
 
 class Contact(Payload):
-    def __init__(self, contact_data):
+    def __init__(self, contact_data, account_id: str):
         super().__init__()
 
         # Standard Contact Data
+        self.AccountId = account_id
         self.FirstName = contact_data['FirstName']
         self.LastName = contact_data['LastName']
         self.Email = contact_data['Email']
