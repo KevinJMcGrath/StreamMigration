@@ -59,10 +59,10 @@ class Contact(Payload):
         self.Annotate__c = False
         self.Dashboard_v2_AS__c = False
         self.Default_One_Year_Timeframe_Filter_AS__c = False
-        self.Expert_Calls__c = True
+        self.Expert_Calls__c = True  # Controls the Stream content set
         self.GammaPreview_AS__c = True
         self.Search_Summary_AS__c = False
-        self.Stream_App_Access_AS__c = True
+        self.Stream_App_Access_AS__c = True  # Controls actual access to the Stream app in AS
         self.Support_Chat__c = False
 
         # Permissions - Disabled

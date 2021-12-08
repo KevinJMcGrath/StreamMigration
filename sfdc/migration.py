@@ -12,7 +12,9 @@ def migrate_stream_users(limit: int=200):
     account_insert_results = insert_account_payloads(account_payload_list)
 
     account_lead_link_payload_list = build_ALL_payloads(account_list, account_insert_results)
+    ALL_insert_results = insert_all_payloads(account_lead_link_payload_list)
 
+    contact_insert_results = insert_contact_payloads(contact_payload_list)
 
 
 def query_source_contacts(limit: int):

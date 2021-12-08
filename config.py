@@ -8,5 +8,15 @@ with open('./config.json', 'r') as config_file:
 
 LogVerbose = _config['log_verbose']
 
-Salesforce_Source = models.config.SalesforceSettings(_config['salesforce_source'])
-Salesforce_Dest = models.config.SalesforceSettings(_config['salesforce_dest'])
+_source = _dest = None
+
+for sfdc_config in _config['salesforce_orgs']:
+    n = sfdc_config['name']
+
+    if n == 'Stream':
+        _source = sfdc_config
+    elif n == 'KevSandbox':
+        _dest = sfdc_config
+
+Salesforce_Source = models.config.SalesforceSettings(_source)
+Salesforce_Dest = models.config.SalesforceSettings(_dest)
