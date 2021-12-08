@@ -13,7 +13,6 @@ def test_contact_insert():
         "FirstName": "Ish",
         "LastName": "Singham",
         "Email": "ijs4ug@virginia.edu",
-
         "Analyst_Search_Filter_AS__c": False,
         "Annotate__c": False,
         "Broker_Research_Module__c": "None",
@@ -143,11 +142,13 @@ def build_ALL_payloads(account_list, account_insert_result_list):
     all_payload_list = []
 
     for i, (a_result, a) in enumerate(zip(account_insert_result_list, account_list)):
-        domain_str = a['Domain__c']
-        aid = a_result['id']
-        payload = jsonpickle.decode(jsonpickle.encode(p.AccountLeadLink(aid, domain_str), unpicklable=False))
+        domain_list = a['Domain__c'].split(',')
 
-        all_payload_list.append(payload)
+        for d in domain_list:
+            aid = a_result['id']
+            payload = jsonpickle.decode(jsonpickle.encode(p.AccountLeadLink(aid, d), unpicklable=False))
+
+            all_payload_list.append(payload)
 
     return all_payload_list
 
