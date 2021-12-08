@@ -1,4 +1,4 @@
 .idea/
-.export/
+.export/*.csv
 
 config.json

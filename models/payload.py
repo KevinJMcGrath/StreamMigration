@@ -40,8 +40,8 @@ class Contact(Payload):
 
         # Analytics
         self.Effective_Date_paying_user__c = contact_data['Date_Became_Paid__c']
-        self.First_Login_Stream__c = contact_data['First_Login__c']
-        self.Last_Login_Stream__c = contact_data['Last_Login__c']
+        self.First_Login_Stream__c = contact_data['First_login__c']
+        self.Last_Login_Stream__c = contact_data['Last_login__c']
 
         # Legacy Stream Data
         self.Stream_SFDC_Id__c = contact_data['Id']
