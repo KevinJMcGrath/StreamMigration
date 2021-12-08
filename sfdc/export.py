@@ -8,6 +8,8 @@ from datetime import datetime
 from pathlib import Path
 
 def export_record_results(payload_list, result_list, object_name: str):
+    logging.info(f'Exporting {object_name} payloads to csv...')
+
     first_payload = payload_list[0]
     prop_definitions = inspect.getmembers(first_payload, lambda prop:not inspect.isroutine(prop))
     prop_names = [prop[0] for prop in prop_definitions if not (prop[0].startswith('__') and prop[0].endswith('__'))]

@@ -1,3 +1,6 @@
+import logging
+
+import config
 import sfdc
 import sfdc.export as export
 
@@ -23,8 +26,11 @@ def migrate_stream_users(limit: int=200):
 
     export.export_record_results(contact_payload_list, contact_insert_results, 'Contact')
 
+    logging.info('Operation complete.')
 
 def query_source_contacts(limit: int):
+    logging.info(f'Loading source Contacts from {config.Salesforce_Source.name}...')
+
     soql = "SELECT Id, FirstName, LastName, Email, People_Status__c, Stream_Client_Type_contact__c, Stream_Role__c, " \
             "Date_Became_Paid__c, First_login__c, Last_login__c, Stream_Active_User__c, Paid__c, " \
             "Stream_Portal_Expert_Id__c, " \
@@ -32,7 +38,7 @@ def query_source_contacts(limit: int):
             "Account.Portal_Account_ID__c, Account.Domain__c, Account.AlphaSense_Account__c, " \
             "Account.AlphaSense_Account_Type__c, Account.Stream_Date_Signed_Call_Agreement__c " \
             "FROM Contact " \
-            "WHERE Stream_Active_User__c = true AND Account.AlphaSense_Account__c = false " \
+            "WHERE Stream_Active_User__c = true AND Account.AlphaSense_Account__c = false AND AccountId != NULL " \
             "ORDER BY AccountId"
 
     if limit and limit > 0:
@@ -41,6 +47,8 @@ def query_source_contacts(limit: int):
     return sfdc.Source_Client.query(soql)
 
 def extract_account_list(contact_list):
+    logging.info(f'Parsing source Accounts from Contact list...')
+
     account_dict = {}
 
     for c in contact_list:
@@ -53,6 +61,8 @@ def extract_account_list(contact_list):
     return account_dict.values()
 
 def build_account_payloads(account_list):
+    logging.info(f'Building Account payloads for Destination: {config.Salesforce_Dest.name}...')
+
     account_payload_list = []
 
     for a in account_list:
@@ -61,6 +71,8 @@ def build_account_payloads(account_list):
     return account_payload_list
 
 def build_contact_payloads(contact_list):
+    logging.info(f'Building Contact payloads for Destination: {config.Salesforce_Dest.name}...')
+
     contact_payload_list = []
 
     for c in contact_list:
@@ -70,6 +82,8 @@ def build_contact_payloads(contact_list):
 
 
 def build_ALL_payloads(account_list, account_insert_result_list):
+    logging.info(f'Building Account_Lead_Link payloads for Destination: {config.Salesforce_Dest.name}...')
+
     all_payload_list = []
 
     for i, (a_result, a) in enumerate(zip(account_insert_result_list, account_list)):
@@ -82,10 +96,13 @@ def build_ALL_payloads(account_list, account_insert_result_list):
     return all_payload_list
 
 def insert_account_payloads(account_payloads):
+    logging.info(f'Inserting new Account records at {config.Salesforce_Dest.name}')
     return sfdc.Dest_Client.inner_client.bulk.Account.create(account_payloads)
 
 def insert_contact_payloads(contact_payloads):
+    logging.info(f'Inserting new Contact records at {config.Salesforce_Dest.name}')
     return sfdc.Dest_Client.inner_client.bulk.Contact.create(contact_payloads)
 
 def insert_all_payloads(all_payloads):
+    logging.info(f'Inserting new Account_Lead_Link records at {config.Salesforce_Dest.name}')
     return sfdc.Dest_Client.inner_client.bulk.Account_Lead_Link__c.create(all_payloads)
