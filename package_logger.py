@@ -31,6 +31,13 @@ def initialize_logging():
     def set_handler_type(stream=sys.stdout):
         return logging.StreamHandler(stream)
 
+    # Somewhere I managed to add a call to a logging statement that gets run before I initialize the
+    # logging system. When that happens, I need to make sure I purge the old default handler or
+    # I'll get double entries.
+    if root_logger.hasHandlers():
+        print('Removing default handler...')
+        h = root_logger.handlers[0]
+        root_logger.removeHandler(h)
 
     # Define the logging handlers
     if config.LogVerbose:
