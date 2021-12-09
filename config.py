@@ -15,7 +15,7 @@ for sfdc_config in _config['salesforce_orgs']:
 
     if n == 'Stream':
         _source = sfdc_config
-    elif n == 'KevSandbox':
+    elif n == 'ASPartial':
         _dest = sfdc_config
 
 Salesforce_Source = models.config.SalesforceSettings(_source)
