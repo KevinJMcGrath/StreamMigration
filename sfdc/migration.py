@@ -142,7 +142,8 @@ def build_ALL_payloads(account_list, account_insert_result_list):
     all_payload_list = []
 
     for i, (a_result, a) in enumerate(zip(account_insert_result_list, account_list)):
-        domain_list = a['Domain__c'].split(',')
+
+        domain_list = a['Domain__c'].split(',') if a['Domain__c'] else 'No Domain Listed'
 
         for d in domain_list:
             aid = a_result['id']
