@@ -33,6 +33,8 @@ class Contact(Payload):
     def __init__(self, contact_data, account_id: str):
         super().__init__()
 
+        self.Skipped = account_id == "-1"
+
         # Standard Contact Data
         self.AccountId = account_id
         self.FirstName = contact_data['FirstName']

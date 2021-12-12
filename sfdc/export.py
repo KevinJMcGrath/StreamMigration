@@ -30,7 +30,11 @@ def export_record_results(payload_list, result_list, object_name: str):
 
         for i, (payload, result) in enumerate(zip(payload_list, result_list)):
             payload['dest_Id'] = result['id']
-            payload['errors'] = '|'.join([e["statusCode"] + '_' + e["message"] for e in result['errors']])
+
+            if payload['skipped']:
+                payload['errors'] = 'Contact insert was skipped - possible Account duplication issue.'
+            else:
+                payload['errors'] = '|'.join([e["statusCode"] + '_' + e["message"] for e in result['errors']])
 
             writer.writerow(payload)
 

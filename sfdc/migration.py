@@ -119,7 +119,7 @@ def build_account_payloads(account_list):
 def build_contact_payloads(contact_list, account_list, account_result):
     logging.info(f'Building Contact payloads for Destination: {config.Salesforce_Dest.name}...')
 
-    dest_acct_id_list = [r['id'] for r in account_result]
+    dest_acct_id_list = [r['id'] for r in account_result if r['id']]
     source_acct_id_list = [s['Id'] for s in account_list]
 
     account_map = dict(zip(source_acct_id_list, dest_acct_id_list))
@@ -129,9 +129,13 @@ def build_contact_payloads(contact_list, account_list, account_result):
     for c in contact_list:
         source_acct_id = c['AccountId']
 
-        if source_acct_id in account_map:
+        if source_acct_id and source_acct_id in account_map:
             dest_acct_id = account_map[source_acct_id]
-            contact_payload_list.append(jsonpickle.decode(jsonpickle.encode(p.Contact(c, dest_acct_id), unpicklable=False)))
+            contact_payload_list.append(
+                jsonpickle.decode(jsonpickle.encode(p.Contact(c, dest_acct_id), unpicklable=False)))
+        else:
+            contact_payload_list.append(
+                jsonpickle.decode(jsonpickle.encode(p.Contact(c, "-1"), unpicklable=False)))
 
     return contact_payload_list
 
@@ -155,13 +159,14 @@ def build_ALL_payloads(account_list, account_insert_result_list):
 
 def insert_account_payloads(account_payloads):
     logging.info(f'Inserting new Account records at {config.Salesforce_Dest.name}')
-    # return sfdc.Dest_Client.inner_client.bulk.Account.create(account_payloads)
+
     return sfdc.Dest_Client.inner_client.bulk.Account.upsert(account_payloads, 'Stream_SFDC_Id__c')
 
 def insert_contact_payloads(contact_payloads):
     logging.info(f'Inserting new Contact records at {config.Salesforce_Dest.name}')
-    # return sfdc.Dest_Client.inner_client.bulk.Contact.create(contact_payloads)
-    return sfdc.Dest_Client.inner_client.bulk.Contact.upsert(contact_payloads, 'Stream_SFDC_Id__c')
+    for_insert = [p for p in contact_payloads if not p['Skipped']]
+
+    return sfdc.Dest_Client.inner_client.bulk.Contact.upsert(for_insert, 'Stream_SFDC_Id__c')
 
 def insert_all_payloads(all_payloads):
     try:
